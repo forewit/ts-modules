@@ -49,7 +49,6 @@
  const DOUBLE_CLICK_DELAY = 300; // reduce to 100 to remove double clicks
 
 interface MousePointer {
-    isDown: boolean,
     isMoving: boolean,
     isLongclick: boolean,
     button: number, // 0 = left, 1 = middle, 2 = right
@@ -87,7 +86,6 @@ interface Gesture {
 
 let trackedElms: Element[] = [],
     mouse: MousePointer = {
-        isDown: false,
         isMoving: false,
         isLongclick: false,
         button: 0,
@@ -127,7 +125,6 @@ const blurHandler = (e: Event) => {
 
     // reset mouse
     mouse.lastMouseupTime = Date.now();
-    mouse.isDown = false;
 
     // mouse-drag-end detection
     if (mouse.isMoving) {
@@ -170,21 +167,21 @@ const mousedownHandler = (e: MouseEvent) => {
 
     // set mouse
     mouse.activeElement = e.target as Element;
-    mouse.isDown = true;
     mouse.lastX = e.clientX;
     mouse.lastY = e.clientY;
     if (!mouse.isMoving) mouse.button = e.button;
 
     // longclick detection
     if (mouse.button === 0) {
-        let now = Date.now();
-
         window.setTimeout(() => {
-            if (now - mouse.lastMouseupTime >= LONG_CLICK_DELAY && !mouse.isMoving) {
+            if (Date.now() - mouse.lastMouseupTime >= LONG_CLICK_DELAY && !mouse.isMoving) {
+                window.removeEventListener("mousemove", mousemoveHandler);
+                window.removeEventListener("mouseup", mouseupHandler);
+                
                 mouse.isLongclick = true;
                 dispatchGesture(mouse.activeElement, {name: "longclick", x: e.clientX, y: e.clientY});
             }
-        }, LONG_CLICK_DELAY);
+        }, LONG_CLICK_DELAY)
     }
 
     // prevent default
@@ -248,7 +245,6 @@ const mouseupHandler = (e: MouseEvent) => {
 
     // set mouse
     mouse.lastMouseupTime = Date.now();
-    mouse.isDown = false;
 
     if (mouse.isMoving) {
         // mouse-drag-end detection
