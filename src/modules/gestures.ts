@@ -175,9 +175,11 @@ const mousedownHandler = (e: MouseEvent) => {
     if (mouse.button === 0) {
         window.setTimeout(() => {
             if (Date.now() - mouse.lastMouseupTime >= LONG_CLICK_DELAY && !mouse.isMoving) {
-                window.removeEventListener("mousemove", mousemoveHandler);
-                window.removeEventListener("mouseup", mouseupHandler);
-                
+                // comment this out to trigger clicks after long clicks
+                //window.removeEventListener("mousemove", mousemoveHandler);
+                //window.removeEventListener("mouseup", mouseupHandler);
+                //-----------------------------------------------------
+
                 mouse.isLongclick = true;
                 dispatchGesture(mouse.activeElement, {name: "longclick", x: e.clientX, y: e.clientY});
             }
@@ -265,7 +267,7 @@ const mouseupHandler = (e: MouseEvent) => {
         }
 
         mouse.isMoving = false;
-    } else {
+    } else if (!mouse.isLongclick) {
         // right-click detection
         if (e.button === 2) {
             dispatchGesture(mouse.activeElement, {name: "right-click", x: e.clientX, y: e.clientY });
@@ -505,6 +507,6 @@ export function untrackAll (): void {
     trackedElms.forEach(elm => untrack(elm));
 }
 
-export function listAll (): void {
-    console.log(trackedElms);
+export function listAll (): Element[] {
+    return [...trackedElms]; // don't return a reference to the original array
 }

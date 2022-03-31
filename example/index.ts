@@ -1,14 +1,19 @@
-import * as Gestures from '../src/modules/gestures.js';
+import * as gestures from '../src/modules/gestures.js';
+import * as utils from '../src/utils.js';
 
 console.log("hi");
 
 
 
 let testDiv = document.getElementsByClassName("test")[0];
-Gestures.track(testDiv);
-testDiv.addEventListener("gesture", function(e: CustomEvent) {
-    console.log(e.detail.name, e.detail.x, e.detail.y);
+gestures.track(testDiv);
+
+testDiv.addEventListener("gesture", (e: CustomEvent) => {
+    utils.log({color: "green", bold: true}, `👉 ${e.detail.name}`);
 });
-Gestures.listAll();
+
+utils.log({color: "green", bold:true}, "👀 watching ", gestures.listAll());
+
+
 
 console.log("bye");

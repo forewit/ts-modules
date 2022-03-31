@@ -102,3 +102,39 @@ export function pointInRotatedRectangle(
     return localX >= -pivotOffsetX && localX <= w - pivotOffsetX &&
         localY >= -pivotOffsetY && localY <= h - pivotOffsetY;
 }
+
+// simple log formatting
+interface LogOptions {
+    color?: string, // "color: {color};"
+    background?: string, // "background: {color};"
+    bold?: boolean, // "font-weight: bold;"
+    stateful?: boolean, // 
+}
+
+export function log(options?: LogOptions, ...remaining: any[]) {
+    let msg: any = [],
+        css: string = '',
+        args: any[] = remaining || [];
+
+    // check if options have been provided
+    if (!(options.color || options.background || options.bold || options.stateful)) {
+        // insert options at the beginning of args
+        args.unshift(options);
+    }
+
+    if (options.color) css += `color: ${options.color};`;
+    if (options.background) css += `background: ${options.background};`;
+    if (options.bold) css += `font-weight: bold;`;
+
+    for (let arg of args) {
+        if (typeof arg === 'string') {
+            msg.push(`%c${arg}`, css);
+        } 
+        else if (options.stateful) {
+            msg.push(`%c${JSON.stringify(arg)}`, css);
+        } 
+        else msg.push(arg);
+    }
+
+    console.log(...msg);
+}
