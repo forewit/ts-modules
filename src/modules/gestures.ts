@@ -48,9 +48,6 @@
  const LONG_CLICK_DELAY = 500;
  const DOUBLE_CLICK_DELAY = 300; // reduce to 100 to remove double clicks
 
- // generate unique id
-const generateID = (): string => { return Math.random().toString(36).substring(2, 9) }
-
 interface MousePointer {
     isDown: boolean,
     isMoving: boolean,
@@ -88,7 +85,6 @@ interface Gesture {
     zoom?: number,
 }
 
-
 let trackedElms: Element[] = [],
     mouse: MousePointer = {
         isDown: false,
@@ -115,16 +111,6 @@ let trackedElms: Element[] = [],
         hypotenuse: null, // distance between two fingers
         activeElement: null
     };
-
-
-
-const copyTouch = (touch: Touch): {identifier: number, x: number, y: number} => {
-    return {
-        identifier: touch.identifier,
-        x: touch.clientX,
-        y: touch.clientY
-    }
-}
 
 const dispatchGesture = (elm: Element, data: Gesture) => {
     elm.dispatchEvent(new CustomEvent("gesture", {
@@ -484,7 +470,7 @@ const touchendHandler = (e: TouchEvent) => {
     touch.isLongpressed = false;
 }
 
-export function track(elm: Element) {
+export function track(elm: Element): void {
     // return if element is already tracked
     for (let item of trackedElms) { 
         if (item === elm) {
@@ -504,7 +490,7 @@ export function track(elm: Element) {
     elm.addEventListener('wheel', wheelHandler, { passive: false });
 }
 
-export function untrack(elm: Element) {
+export function untrack(elm: Element): void {
     for (let i = 0; i < trackedElms.length; i++) {
         if (trackedElms[i] === elm) {
             // stop tracking element
@@ -521,11 +507,11 @@ export function untrack(elm: Element) {
     }
 }
 
-export function untrackAll () {
+export function untrackAll (): void {
     // untrack each element
     trackedElms.forEach(elm => untrack(elm));
 }
 
-export function listAll () {
+export function listAll (): void {
     console.log(trackedElms);
 }
