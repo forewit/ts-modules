@@ -473,10 +473,7 @@ const touchendHandler = (e: TouchEvent) => {
 export function track(elm: Element): void {
     // return if element is already tracked
     for (let item of trackedElms) { 
-        if (item === elm) {
-            console.error(`Gestures are already being tracked on ${elm}`);
-            return; 
-        }
+        if (item === elm) return;
     }
 
     // add window event listeners if this is the first element being tracked
