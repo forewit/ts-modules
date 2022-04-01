@@ -72,8 +72,7 @@ export function pointInRotatedRectangle(x, y, rectX, rectY, pivotOffsetX, pivotO
 export function log(options, ...remaining) {
     let msg = [], css = '', args = remaining || [];
     // check if options have been provided
-    if (!(options.color || options.background || options.bold || options.stateful)) {
-        // insert options at the beginning of args
+    if (!(options.color || options.background || options.bold || options.stringify)) {
         args.unshift(options);
     }
     if (options.color)
@@ -86,7 +85,7 @@ export function log(options, ...remaining) {
         if (typeof arg === 'string') {
             msg.push(`%c${arg}`, css);
         }
-        else if (options.stateful) {
+        else if (options.stringify) {
             msg.push(`%c${JSON.stringify(arg)}`, css);
         }
         else
