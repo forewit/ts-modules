@@ -15,7 +15,7 @@ utils.log("👀 watching ", gestures.getTrackedElms(), {color: "green", bold:tru
 
 // testing keys
 keys.bind("Control+r, Control+R", (e) => {
-    utils.log("🔃 prevented page reload", {color: "red"});
+    utils.log("🔃 prevented page reload", {color: "lightred"});
     e.preventDefault();
 });
 utils.log("🔑 listening ", keys.getKeybindings(), {color:"green", bold:true});
