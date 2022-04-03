@@ -15,20 +15,22 @@ can handle shortcuts and chords
 const SHORTCUT_SEPARATOR = ", ";
 const SPLIT_KEY = "+";
 
-// Example: "Control+keyK+keyO, Shift+keyO"
+// Example: "Control+keyK+keyO, Shift+keyO, Control+keyS"
+// 
+// keybindings = [{
 // "keyO": [{ down: ["Control", "keyK"], callback: fn },
-//          { down: ["Shift"], callback: fn }]
+//          { down: ["Shift"], callback: fn }],
+// "keyS": [{ down: ["Control"], callback: fn }]
+// }]
 interface Keybinding {
-    [key: string]: { down: string[], callback: Function }[]
+    [key: string]: { down: string[], callback: (e: KeyboardEvent) => any}[]
 };
-
 
 let keybindings: Keybinding = {},
     down: { [keycode: number]: boolean } = {},
-    chord: string[] = [],
     listening = false;
 
-export function bind(shortcuts: string, fn: Function): void {
+export function bind(shortcuts: string, fn: (e: KeyboardEvent) => any): void {
     // resume window event listeners
     if (!listening) {
         window.addEventListener('keydown', keydownHandler, { passive: false });
@@ -80,7 +82,26 @@ export function unbind(shortcuts?: String): void {
 
 export function logKeybindings(): void { console.log(keybindings); }
 
-function keydownHandler(e: KeyboardEvent): void {}
-function keyupHandler(e: KeyboardEvent): void { down[e.key] = false; }
-function blurHandler(): void { down = {}; }
+function keydownHandler(e: KeyboardEvent): void {
+    // return if composing
+    if (e.isComposing) return;
 
+    // update down keys
+    down[e.key] = true;
+
+    // check if key is in keybindings
+    if (!keybindings[e.key]) return;
+
+    // loop through each keybinding
+    keybindings[e.key].forEach(k => {
+        // if every and only the keys are down, call the callback
+        // To force shortcuts to be exact, add:
+        //      && Object.keys(down).length === (k.down.length+1)
+        if (k.down.every(key => down[key])) {
+            k.callback(e);
+            console.log(down);
+        }
+    });
+}
+function keyupHandler(e: KeyboardEvent): void { delete down[e.key]; }
+function blurHandler(): void { down = {}; }

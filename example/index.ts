@@ -11,13 +11,18 @@ gestures.track(testDiv);
 
 testDiv.addEventListener("gesture", (e: CustomEvent) => {
     let emoji = (e.detail.type === "mouse") ? "🖱️" : "👉";
-    utils.log({color: "green", bold: true}, `${emoji} ${e.detail.name}`);
+    utils.log({color: "yellow"}, `${emoji} ${e.detail.name}`);
 });
 
 utils.log({color: "green", bold:true}, "👀 watching ", gestures.listAll());
 
 // testing keys
-keys.bind("Control+s, Meta+s", (e: KeyboardEvent, shortcut: string) => {alert("saving");});
-keys.logKeybindings();
+// prevent reloading the page
+keys.bind("Control+r, Control+R", (e) => {
+    utils.log({color: "red"}, "🔃 prevented page reload");
+    e.preventDefault();
+});
+
+
 
 console.log("bye");

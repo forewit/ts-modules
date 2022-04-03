@@ -7,10 +7,13 @@ let testDiv = document.getElementsByClassName("test")[0];
 gestures.track(testDiv);
 testDiv.addEventListener("gesture", (e) => {
     let emoji = (e.detail.type === "mouse") ? "🖱️" : "👉";
-    utils.log({ color: "green", bold: true }, `${emoji} ${e.detail.name}`);
+    utils.log({ color: "yellow" }, `${emoji} ${e.detail.name}`);
 });
 utils.log({ color: "green", bold: true }, "👀 watching ", gestures.listAll());
 // testing keys
-keys.bind("Control+s, Meta+s", (e, shortcut) => { alert("saving"); });
-keys.logKeybindings();
+// prevent reloading the page
+keys.bind("Control+r, Control+R", (e) => {
+    utils.log({ color: "red" }, "🔃 prevented page reload");
+    e.preventDefault();
+});
 console.log("bye");

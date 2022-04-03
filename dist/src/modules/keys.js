@@ -12,7 +12,7 @@ can handle shortcuts and chords
 const SHORTCUT_SEPARATOR = ", ";
 const SPLIT_KEY = "+";
 ;
-let keybindings = {}, down = {}, chord = [], listening = false;
+let keybindings = {}, down = {}, listening = false;
 export function bind(shortcuts, fn) {
     // resume window event listeners
     if (!listening) {
@@ -57,6 +57,25 @@ export function unbind(shortcuts) {
     });
 }
 export function logKeybindings() { console.log(keybindings); }
-function keydownHandler(e) { }
-function keyupHandler(e) { down[e.key] = false; }
+function keydownHandler(e) {
+    // return if composing
+    if (e.isComposing)
+        return;
+    // update down keys
+    down[e.key] = true;
+    // check if key is in keybindings
+    if (!keybindings[e.key])
+        return;
+    // loop through each keybinding
+    keybindings[e.key].forEach(k => {
+        // if every and only the keys are down, call the callback
+        // To force shortcuts to be exact, add:
+        //      && Object.keys(down).length === (k.down.length+1)
+        if (k.down.every(key => down[key])) {
+            k.callback(e);
+            console.log(down);
+        }
+    });
+}
+function keyupHandler(e) { delete down[e.key]; }
 function blurHandler() { down = {}; }
