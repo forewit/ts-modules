@@ -69,18 +69,20 @@ export function pointInRotatedRectangle(x, y, rectX, rectY, pivotOffsetX, pivotO
     return localX >= -pivotOffsetX && localX <= w - pivotOffsetX &&
         localY >= -pivotOffsetY && localY <= h - pivotOffsetY;
 }
-export function log(options, ...remaining) {
-    let msg = [], css = '', args = remaining || [];
+export function log(...args) {
+    let msg = [], css = '', last = args[args.length - 1] || {}, options = {};
     // check if options have been provided
-    if (!(options.color || options.background || options.bold || options.stringify)) {
-        args.unshift(options);
+    if (last.color || last.background || last.bold || last.stringify) {
+        options = args.pop();
     }
+    // add css
     if (options.color)
         css += `color: ${options.color};`;
     if (options.background)
         css += `background: ${options.background};`;
     if (options.bold)
         css += `font-weight: bold;`;
+    // build console message
     for (let arg of args) {
         if (typeof arg === 'string') {
             msg.push(`%c${arg}`, css);

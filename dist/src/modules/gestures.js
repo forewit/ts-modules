@@ -428,6 +428,6 @@ export function untrackAll() {
     // untrack each element
     trackedElms.forEach(elm => untrack(elm));
 }
-export function listAll() {
+export function getTrackedElms() {
     return [...trackedElms]; // don't return a reference to the original array
 }

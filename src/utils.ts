@@ -108,23 +108,26 @@ interface LogOptions {
     color?: string, // "color: {color};"
     background?: string, // "background: {color};"
     bold?: boolean, // "font-weight: bold;"
-    stringify?: boolean, // stringify objects
+    stringify?: boolean, // print objects as JSON
 }
 
-export function log(options?: LogOptions, ...remaining: any[]) {
+export function log(...args: any[]) {
     let msg: any[] = [],
         css: string = '',
-        args: any[] = remaining || [];
+        last = args[args.length - 1] || {},
+        options: LogOptions = {};
 
     // check if options have been provided
-    if (!(options.color || options.background || options.bold || options.stringify)) {
-        args.unshift(options);
+    if (last.color || last.background || last.bold || last.stringify) {
+        options = args.pop();
     }
 
+    // add css
     if (options.color) css += `color: ${options.color};`;
     if (options.background) css += `background: ${options.background};`;
     if (options.bold) css += `font-weight: bold;`;
 
+    // build console message
     for (let arg of args) {
         if (typeof arg === 'string') {
             msg.push(`%c${arg}`, css);

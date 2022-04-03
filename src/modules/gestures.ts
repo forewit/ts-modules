@@ -508,6 +508,6 @@ export function untrackAll (): void {
     trackedElms.forEach(elm => untrack(elm));
 }
 
-export function listAll (): Element[] {
+export function getTrackedElms (): Element[] {
     return [...trackedElms]; // don't return a reference to the original array
 }

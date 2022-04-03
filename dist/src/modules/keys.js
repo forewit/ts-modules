@@ -1,18 +1,22 @@
-/*
-keys.bind("ctrl+s, cmd+s", (e: KeyboardEvent, shortcut: string) => {});
-keys.unbind("ctrl+s, cmd+s"); || keys.unbind();
+/* HOW TO USE
+keys.bind("Control+r, Control+R", (e: KeyboardEvent, shortcut: string) => {});
+keys.unbind("Control+R"); OR keys.unbind();
 
-
-NOTES
-only need to track keydown event
-can handle shortcuts and chords
-"ctrl+s" (ctrl and s pressed at the same time)
-"g t" (g pressed, then t pressed)
+Example binding "Control+k+o, Shift+o, Control+s" results in:
+keybindings = [{
+    "o": [
+        { down: ["Control", "k"], callback: fn },
+        { down: ["Shift"], callback: fn }],
+    "s": [
+        { down: ["Control"], callback: fn }
+    ]
+ }]
 */
 const SHORTCUT_SEPARATOR = ", ";
 const SPLIT_KEY = "+";
 ;
 let keybindings = {}, down = {}, listening = false;
+export function getKeybindings() { return keybindings; }
 export function bind(shortcuts, fn) {
     // resume window event listeners
     if (!listening) {
@@ -56,7 +60,6 @@ export function unbind(shortcuts) {
         });
     });
 }
-export function logKeybindings() { console.log(keybindings); }
 function keydownHandler(e) {
     // return if composing
     if (e.isComposing)
@@ -71,10 +74,8 @@ function keydownHandler(e) {
         // if every and only the keys are down, call the callback
         // To force shortcuts to be exact, add:
         //      && Object.keys(down).length === (k.down.length+1)
-        if (k.down.every(key => down[key])) {
+        if (k.down.every(key => down[key]))
             k.callback(e);
-            console.log(down);
-        }
     });
 }
 function keyupHandler(e) { delete down[e.key]; }
