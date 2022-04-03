@@ -11,22 +11,24 @@ can handle shortcuts and chords
 "g t" (g pressed, then t pressed)
 */
 
-const KEY_DELAY = 1000;
 
-let keybindings: { [id: string]: Function } = {},
+const SHORTCUT_SEPARATOR = ", ";
+const SPLIT_KEY = "+";
+
+// Example: "Control+keyK+keyO, Shift+keyO"
+// "keyO": [{ down: ["Control", "keyK"], callback: fn },
+//          { down: ["Shift"], callback: fn }]
+interface Keybinding {
+    [key: string]: { down: string[], callback: Function }[]
+};
+
+
+let keybindings: Keybinding = {},
     down: { [keycode: number]: boolean } = {},
     chord: string[] = [],
     listening = false;
 
-function parseShortcut(shortcut: string): string[] {
-    return shortcut.split(/\s*,\s*/g);
-}
-
-function keydownHandler(e: KeyboardEvent): void {}
-function keyupHandler(e: KeyboardEvent): void { down[e.key] = false; }
-function blurHandler(): void { down = {}; }
-
-export function bind(shortcut: string, fn: Function): void {
+export function bind(shortcuts: string, fn: Function): void {
     // resume window event listeners
     if (!listening) {
         window.addEventListener('keydown', keydownHandler, { passive: false });
@@ -34,25 +36,51 @@ export function bind(shortcut: string, fn: Function): void {
         window.addEventListener('blur', blurHandler);
         listening = true;
     }
-    // parse shortcut string
 
-    // add shortcuts to keybindings
+    // split shortcut string into array of shortcuts
+    let splitShortcuts: string[] = shortcuts.split(SHORTCUT_SEPARATOR);
+    
+    // create a keybinding for each shortcut
+    splitShortcuts.forEach(s => {
+        let keys: string[] = s.split(SPLIT_KEY);
+        let id = keys.pop();
+
+        if (!keybindings[id]) keybindings[id] = [];
+        keybindings[id].push({ down: keys, callback: fn });
+    });
 }
 
-export function unbind(...shortcuts: string[]): void {
-    // pause all if no ids are specified
-    if (shortcuts.length === 0) {
+export function unbind(shortcuts?: String): void {
+    // unbind all if no ids are specified
+    if (!shortcuts) {
         window.removeEventListener('keydown', keydownHandler);
         window.removeEventListener('keyup', keyupHandler);
         window.removeEventListener('blur', blurHandler);
         listening = false;
+        keybindings = {};
         return;
     }
 
-    // remove specific keybindings
-    for (let id of shortcuts) delete keybindings[id];
+    // split shortcut string into array of shortcuts
+    let splitShortcuts: string[] = shortcuts.split(SHORTCUT_SEPARATOR);
+    
+    // remove keybindings for each shortcut
+    splitShortcuts.forEach(s => {
+        let keys: string[] = s.split(SPLIT_KEY);
+        let id = keys.pop();
 
-    // remove window event listeners if no keybindings are left
-    if (Object.keys(keybindings).length === 0) unbind();
+        keybindings[id].forEach(k => {
+            // if keys matches the keybinding, remove it
+            if (k.down.length === keys.length && k.down.every((k, i) => k === keys[i])) {
+                delete keybindings[id];
+            }
+        });
+    });
 }
+
+export function logKeybindings(): void { console.log(keybindings); }
+
+function keydownHandler(e: KeyboardEvent): void {}
+function keyupHandler(e: KeyboardEvent): void { down[e.key] = false; }
+function blurHandler(): void { down = {}; }
 

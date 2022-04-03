@@ -11,5 +11,6 @@ testDiv.addEventListener("gesture", (e) => {
 });
 utils.log({ color: "green", bold: true }, "👀 watching ", gestures.listAll());
 // testing keys
-keys.bind("ctrl+s, cmd+s", (e, shortcut) => { alert("saving"); });
+keys.bind("Control+s, Meta+s", (e, shortcut) => { alert("saving"); });
+keys.logKeybindings();
 console.log("bye");
