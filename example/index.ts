@@ -1,5 +1,5 @@
-import * as gestures from '../src/modules/gestures.js';
-import * as keys from '../src/modules/keys.js';
+import * as gestures from '../src/gestures.js';
+import * as keys from '../src/keys.js';
 import * as utils from '../src/utils.js';
 
 
