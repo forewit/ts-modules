@@ -13,7 +13,6 @@ testDiv.addEventListener("gesture", (e: CustomEvent) => {
 utils.log("👀 watching ", gestures.getTrackedElms(), {color: "green", bold:true});
 
 
-
 // testing keys
 keys.bind("Control+r, Control+R", (e) => {
     utils.log("🔃 prevented page reload", {color: "red"});
