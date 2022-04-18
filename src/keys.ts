@@ -20,10 +20,9 @@ interface Keybinding {
 };
 
 let keybindings: Keybinding = {},
-    down: { [keycode: number]: boolean } = {},
     listening = false;
 
-export function getKeybindings(): Keybinding { return keybindings; }
+export let down: { [keycode: number]: boolean } = {};
 
 export function bind(shortcuts: string, fn: (e: KeyboardEvent) => any): void {
     // resume window event listeners
@@ -61,7 +60,7 @@ export function unbind(shortcuts?: String): void {
     // split shortcut string into array of shortcuts
     let splitShortcuts: string[] = shortcuts.split(SHORTCUT_SEPARATOR);
     
-    // remove keybindings for each shortcut
+    // remove keybindings for each shortcut given
     splitShortcuts.forEach(s => {
         let keys: string[] = s.split(SPLIT_KEY);
         let id = keys.pop();
