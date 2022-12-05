@@ -15,8 +15,8 @@ keybindings = [{
 const SHORTCUT_SEPARATOR = ", ";
 const SPLIT_KEY = "+";
 ;
-let keybindings = {}, down = {}, listening = false;
-export function getKeybindings() { return keybindings; }
+let keybindings = {}, listening = false;
+export let down = {};
 export function bind(shortcuts, fn) {
     // resume window event listeners
     if (!listening) {
@@ -48,7 +48,7 @@ export function unbind(shortcuts) {
     }
     // split shortcut string into array of shortcuts
     let splitShortcuts = shortcuts.split(SHORTCUT_SEPARATOR);
-    // remove keybindings for each shortcut
+    // remove keybindings for each shortcut given
     splitShortcuts.forEach(s => {
         let keys = s.split(SPLIT_KEY);
         let id = keys.pop();

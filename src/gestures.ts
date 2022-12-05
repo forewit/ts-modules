@@ -6,6 +6,7 @@
  * right-click
  * double-click
  * longclick
+ * longclick-release
  * 
  * left-click-drag-start
  * left-click-dragging
@@ -28,6 +29,7 @@
  * tap
  * doubletap
  * longpress
+ * longpress-release
  * 
  * touch-drag-start
  * touch-dragging
@@ -285,6 +287,9 @@
                  mouse.consecutiveClicks = 0;
              }, DOUBLE_CLICK_DELAY);
          }
+     } else {
+        // longclick-release
+        dispatchGesture(mouse.activeElement, { name: "longclick-release", x: e.clientX, y: e.clientY });
      }
  
      mouse.isLongclick = false;
@@ -460,6 +465,8 @@
              if (touch.consecutiveTaps > 1) dispatchGesture(touch.activeElement, { name: "double-tap", x: touch.x, y: touch.y });
              touch.consecutiveTaps = 0;
          }, DOUBLE_TAP_DELAY);
+     } else {
+        dispatchGesture(touch.activeElement, { name: "longpress-release", x: touch.x, y: touch.y });
      }
  
      touch.isLongpressed = false;
