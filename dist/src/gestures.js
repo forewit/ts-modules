@@ -234,10 +234,8 @@ const mouseupHandler = (e) => {
             }, DOUBLE_CLICK_DELAY);
         }
     }
-    else {
-        // longclick-release
-        dispatchGesture(mouse.activeElement, { name: "longclick-release", x: e.clientX, y: e.clientY });
-    }
+    // longclick-release
+    dispatchGesture(mouse.activeElement, { name: "longclick-release", x: e.clientX, y: e.clientY });
     mouse.isLongclick = false;
 };
 const touchstartHandler = (e) => {
@@ -394,9 +392,8 @@ const touchendHandler = (e) => {
             touch.consecutiveTaps = 0;
         }, DOUBLE_TAP_DELAY);
     }
-    else {
-        dispatchGesture(touch.activeElement, { name: "longpress-release", x: touch.x, y: touch.y });
-    }
+    // longpress-release
+    dispatchGesture(touch.activeElement, { name: "longpress-release", x: touch.x, y: touch.y });
     touch.isLongpressed = false;
 };
 export function enable(...elms) {
