@@ -1,15 +1,18 @@
 import * as gestures from '../src/gestures.js';
 import * as keys from '../src/keys.js';
 import * as utils from '../src/utils.js';
+import * as swapgrid from '../src/swapgrid.js';
 // testing gestures
-let testDiv = document.getElementsByClassName("test")[0];
-gestures.enable(testDiv);
-testDiv.addEventListener("gesture", (e) => {
-    let emoji = (e.detail.type === "mouse") ? "🖱️" : "👉";
-    utils.log(`${emoji} ${e.detail.name}`, { color: "grey" });
+let testElm = document.getElementsByClassName("gestures")[0];
+gestures.enable(testElm);
+testElm.addEventListener("gesture", (e) => {
+    utils.log(`${e.detail.name}`, { color: "grey" });
 });
 // testing keys
 keys.bind("Control+r, Control+R", (e) => {
     utils.log("🔃 prevented page reload", { color: "lightred" });
     e.preventDefault();
 });
+// testing swapgrid
+let gridElm = document.getElementsByClassName("swapgrid")[0];
+swapgrid.enable(gridElm);

@@ -1,4 +1,16 @@
-.test {
+.gestures {
     background: cornsilk;
     height: 200px;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    grid-gap: 1em;
+}
+.grid-item {
+    background-color: #eee;
+    border: 1px solid #ccc;
+    padding: 1em;
 }
