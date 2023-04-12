@@ -89,7 +89,6 @@ const dispatchGesture = (elm, data) => {
     }));
 };
 const focusHandler = (e) => {
-    console.log("focus");
     // reset mouse and touch
     mouse.reset();
     touch.reset();
@@ -101,7 +100,6 @@ const focusHandler = (e) => {
     window.removeEventListener("touchend", touchendHandler);
 };
 const blurHandler = (e) => {
-    console.log("blur");
     // remove all window listeners
     window.removeEventListener("mousemove", mousemoveHandler);
     window.removeEventListener("mouseup", mouseupHandler);
