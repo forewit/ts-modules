@@ -10,7 +10,7 @@ testElm.addEventListener("gesture", (e) => {
 });
 // testing keys
 keys.bind("Control+r, Control+R", (e) => {
-    utils.log("⌨️ prevented page reload", { color: "dodgerblue", bold: true });
+    utils.log("⌨️ prevented page reload", { color: "goldenrod" });
     e.preventDefault();
 });
 // testing swapgrid
