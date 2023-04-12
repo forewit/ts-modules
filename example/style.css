@@ -1,16 +1,23 @@
+/* gestures */
 .gestures {
     background: cornsilk;
     height: 200px;
 }
 
-.grid {
+
+/* swapgrid */
+.swapgrid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     grid-template-rows: repeat(2, 1fr);
     grid-gap: 1em;
 }
-.grid-item {
+.swapgrid-item {
     background-color: #eee;
     border: 1px solid #ccc;
     padding: 1em;
+    cursor: move;
+}
+.swapgrid-item.over {
+    background-color: #ddd;
 }

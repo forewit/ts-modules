@@ -32,13 +32,55 @@ Behaviour:
     - if a grid item is dropped on another grid item in the same grid, swap the two items and reflow the grid
     - do nothing if a grid item is dropped on a non-grid item
 */
+let activeElms = [];
+const dragstartHandler = (e) => {
+    // logging
+    console.log("dragstart", e.target);
+};
+const dragoverHandler = (e) => {
+    // logging
+    console.log("dragover", e.target);
+};
+const dropHandler = (e) => {
+    // logging
+    console.log("drop", e.target);
+};
 export function enable(...elms) {
-    // skip if element is already tracked
-    // add window event listeners if this is the first element being tracked
-    // start tracking element
+    for (let elm of elms) {
+        // skip if element is already tracked
+        if (activeElms.findIndex(e => e === elm) !== -1)
+            continue;
+        // add window event listeners if this is the first element being tracked
+        if (activeElms.length == 0) {
+            // TODO: add window event listeners
+        }
+        // start tracking element
+        activeElms.push(elm);
+        // TODO: add element event listeners
+    }
 }
 export function disable(...elms) {
+    const clearEventListeners = (elm) => {
+        // TODO: remove element event listeners
+    };
     // if no elements were specified, disable all active elements
+    if (elms.length == 0) {
+        for (let elm of activeElms)
+            clearEventListeners(elm);
+        activeElms = [];
+    }
     // otherwise, disable specified elements
-    // if no more elements are enabled, remove any window event listeners
+    else {
+        for (let elm of elms) {
+            let index = activeElms.findIndex(e => e === elm);
+            if (index !== -1) {
+                clearEventListeners(elm);
+                activeElms.splice(index, 1);
+            }
+        }
+    }
+    // if no more elements are enabled, remove window event listeners
+    if (activeElms.length == 0) {
+        // TODO: remove window event listeners
+    }
 }

@@ -6,11 +6,11 @@ import * as swapgrid from '../src/swapgrid.js';
 let testElm = document.getElementsByClassName("gestures")[0];
 gestures.enable(testElm);
 testElm.addEventListener("gesture", (e) => {
-    utils.log(`${e.detail.name}`, { color: "grey" });
+    utils.log(`🖱️ ${e.detail.name}`, { color: "dodgerblue" });
 });
 // testing keys
 keys.bind("Control+r, Control+R", (e) => {
-    utils.log("🔃 prevented page reload", { color: "lightred" });
+    utils.log("⌨️ prevented page reload", { color: "dodgerblue", bold: true });
     e.preventDefault();
 });
 // testing swapgrid
