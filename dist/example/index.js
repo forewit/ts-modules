@@ -1,7 +1,7 @@
 import * as gestures from '../src/gestures.js';
 import * as keys from '../src/keys.js';
 import * as utils from '../src/utils.js';
-import * as swapgrid from '../src/swapgrid.js';
+import * as swapgrid from '../src/snapgrid.js';
 // testing gestures
 let testElm = document.getElementsByClassName("gestures")[0];
 gestures.enable(testElm);
@@ -14,5 +14,5 @@ keys.bind("Control+r, Control+R", (e) => {
     e.preventDefault();
 });
 // testing swapgrid
-let gridElm = document.getElementsByClassName("swapgrid")[0];
+let gridElm = document.getElementsByClassName("snapgrid")[0];
 swapgrid.enable(gridElm);
