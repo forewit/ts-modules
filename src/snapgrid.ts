@@ -24,9 +24,9 @@ Example CSS:
     }
 
 Example JavaScript:
-    import { SwapGrid } from './swapgrid';
+    import { snapgrid } from './snapgrid';
     const grid = document.querySelector('.grid');
-    const swapGrid = new SwapGrid(grid);
+    const snapgrid = new snapgrid(grid);
 
 Behaviour:
     - if a grid item is dropped on another grid item in the same grid, swap the two items and reflow the grid
