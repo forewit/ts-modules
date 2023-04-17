@@ -92,4 +92,5 @@ export function disable(...elms: Element[]): void {
     if (activeElms.length == 0) {
         // TODO: remove window event listeners
     }
-}
+} 
+
