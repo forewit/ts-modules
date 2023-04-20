@@ -3,21 +3,3 @@
     background: cornsilk;
     height: 200px;
 }
-
-
-/* swapgrid */
-.swapgrid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    grid-template-rows: repeat(2, 1fr);
-    grid-gap: 1em;
-}
-.swapgrid-item {
-    background-color: #eee;
-    border: 1px solid #ccc;
-    padding: 1em;
-    cursor: move;
-}
-.swapgrid-item.over {
-    background-color: #ddd;
-}

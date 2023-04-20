@@ -1,7 +1,6 @@
 import * as gestures from '../src/gestures.js';
 import * as keys from '../src/keys.js';
 import * as utils from '../src/utils.js';
-import * as snapgrid from '../src/snapgrid.js';
 
 // testing gestures
 let testElm = document.getElementsByClassName("gestures")[0];
@@ -15,7 +14,3 @@ keys.bind("Control+r, Control+R", (e) => {
     utils.log("⌨️ prevented page reload", {color: "goldenrod"});
     e.preventDefault();
 });
-
-// testing snapgrid
-let gridElm = document.getElementsByClassName("snapgrid")[0];
-snapgrid.enable(gridElm);
