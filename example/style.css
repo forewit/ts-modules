@@ -1,5 +1,15 @@
 /* gestures */
-.gestures {
+#gestures {
     background: cornsilk;
     height: 200px;
+}
+
+/* drawing */
+#drawing {
+    background: lightblue;
+    height: 200px;
+}
+
+html, body {
+    margin: 0;
 }

@@ -1,11 +1,11 @@
 import * as gestures from '../src/gestures.js';
 import * as keys from '../src/keys.js';
 import * as utils from '../src/utils.js';
-import * as swapgrid from '../src/snapgrid.js';
+import Drawing from '../src/drawing.js';
 // testing gestures
-let testElm = document.getElementsByClassName("gestures")[0];
-gestures.enable(testElm);
-testElm.addEventListener("gesture", (e) => {
+let gesturesElm = document.getElementById("gestures");
+gestures.enable(gesturesElm);
+gesturesElm.addEventListener("gesture", (e) => {
     utils.log(`🖱️ ${e.detail.name}`, { color: "dodgerblue" });
 });
 // testing keys
@@ -13,6 +13,6 @@ keys.bind("Control+r, Control+R", (e) => {
     utils.log("⌨️ prevented page reload", { color: "goldenrod" });
     e.preventDefault();
 });
-// testing swapgrid
-let gridElm = document.getElementsByClassName("snapgrid")[0];
-swapgrid.enable(gridElm);
+// testing pen
+let drawingCanvas = document.getElementById("drawing");
+new Drawing(drawingCanvas);
