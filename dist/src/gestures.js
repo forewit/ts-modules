@@ -6,7 +6,7 @@
  * right-click
  * double-click
  * longclick
- * longclick-release
+ * longclick-release (only triggered if mouse did not move longclick)
  *
  * left-click-drag-start
  * left-click-dragging
@@ -48,29 +48,39 @@ const LONG_PRESS_DELAY = 500;
 const DOUBLE_TAP_DELAY = 300; // reduce to 100 to remove double taps
 const LONG_CLICK_DELAY = 500;
 const DOUBLE_CLICK_DELAY = 300; // reduce to 100 to remove double clicks
-let activeElms = [], mouse = {
-    isMoving: false,
-    isLongclick: false,
-    button: 0,
-    lastX: 0,
-    lastY: 0,
-    consecutiveClicks: 0,
-    lastMouseupTime: 0,
-    activeElement: null
-}, touch = {
-    isDragging: false,
-    isPinching: false,
-    isLongpressed: false,
-    consecutiveTaps: 0,
-    lastTouchendTime: 0,
-    lastCenterX: 0,
-    lastCenterY: 0,
-    identifier: null,
-    x: 0,
-    y: 0,
-    hypotenuse: null,
-    activeElement: null
-};
+// MousePointer Class
+class MousePointer {
+    constructor() { this.reset(); }
+    reset() {
+        this.isMoving = false;
+        this.isLongclick = false;
+        this.button = 0;
+        this.lastX = 0;
+        this.lastY = 0;
+        this.consecutiveClicks = 0;
+        this.lastMouseupTime = 0;
+        this.activeElement = null;
+    }
+}
+// TouchPointer Class
+class TouchPointer {
+    constructor() { this.reset(); }
+    reset() {
+        this.isDragging = false;
+        this.isPinching = false;
+        this.isLongpressed = false;
+        this.consecutiveTaps = 0;
+        this.lastTouchendTime = 0;
+        this.lastCenterX = 0;
+        this.lastCenterY = 0;
+        this.identifier = 0;
+        this.x = 0;
+        this.y = 0;
+        this.hypotenuse = 0; // distance between two fingers
+        this.activeElement = null;
+    }
+}
+let activeElms = [], mouse = new MousePointer(), touch = new TouchPointer();
 const dispatchGesture = (elm, data) => {
     elm.dispatchEvent(new CustomEvent("gesture", {
         detail: data,
@@ -78,27 +88,65 @@ const dispatchGesture = (elm, data) => {
         cancelable: false
     }));
 };
+const focusHandler = (e) => {
+    // reset mouse and touch
+    mouse.reset();
+    touch.reset();
+    mouse.lastMouseupTime = Date.now();
+    // remove all window listeners
+    window.removeEventListener("mousemove", mousemoveHandler);
+    window.removeEventListener("mouseup", mouseupHandler);
+    window.removeEventListener("touchmove", touchmoveHandler);
+    window.removeEventListener("touchend", touchendHandler);
+};
 const blurHandler = (e) => {
     // remove all window listeners
     window.removeEventListener("mousemove", mousemoveHandler);
     window.removeEventListener("mouseup", mouseupHandler);
-    // reset mouse
-    mouse.lastMouseupTime = Date.now();
+    window.removeEventListener("touchmove", touchmoveHandler);
+    window.removeEventListener("touchend", touchendHandler);
     // mouse-drag-end detection
     if (mouse.isMoving) {
         mouse.isMoving = false;
-        switch (mouse.button) {
-            case 0:
-                dispatchGesture(mouse.activeElement, { name: "left-click-drag-end", x: mouse.lastX, y: mouse.lastY });
-                break;
-            case 1:
-                dispatchGesture(mouse.activeElement, { name: "middle-click-drag-end", x: mouse.lastX, y: mouse.lastY });
-                break;
-            case 2:
-                dispatchGesture(mouse.activeElement, { name: "right-click-drag-end", x: mouse.lastX, y: mouse.lastY });
-                break;
+        if (mouse.isLongclick) {
+            mouse.isLongclick = false;
+            dispatchGesture(mouse.activeElement, { name: "longclick-drag-end", x: mouse.lastX, y: mouse.lastY });
+        }
+        else {
+            switch (mouse.button) {
+                case 0:
+                    dispatchGesture(mouse.activeElement, { name: "left-click-drag-end", x: mouse.lastX, y: mouse.lastY });
+                    break;
+                case 1:
+                    dispatchGesture(mouse.activeElement, { name: "middle-click-drag-end", x: mouse.lastX, y: mouse.lastY });
+                    break;
+                case 2:
+                    dispatchGesture(mouse.activeElement, { name: "right-click-drag-end", x: mouse.lastX, y: mouse.lastY });
+                    break;
+            }
         }
     }
+    // longclick-release
+    if (mouse.isLongclick)
+        dispatchGesture(mouse.activeElement, { name: "longclick-release", x: mouse.lastX, y: mouse.lastY });
+    // reset mouse
+    mouse.reset();
+    // touch-drag-end detection
+    if (touch.isDragging) {
+        touch.isDragging = false;
+        if (touch.isLongpressed) {
+            touch.isLongpressed = false;
+            dispatchGesture(touch.activeElement, { name: "longpress-drag-end", x: touch.lastCenterX, y: touch.lastCenterY });
+        }
+        else {
+            dispatchGesture(touch.activeElement, { name: "touch-drag-end", x: touch.lastCenterX, y: touch.lastCenterY });
+        }
+    }
+    // longpress-release
+    if (touch.isLongpressed)
+        dispatchGesture(touch.activeElement, { name: "longpress-release", x: touch.lastCenterX, y: touch.lastCenterY });
+    // reset touch
+    touch.reset();
 };
 const wheelHandler = (e) => {
     dispatchGesture(e.target, { name: "wheel", x: e.clientX, y: e.clientY, event: e });
@@ -142,6 +190,9 @@ const mousedownHandler = (e) => {
     e.stopPropagation();
 };
 const mousemoveHandler = (e) => {
+    // return if there is no movement
+    if (e.movementX === 0 && e.movementY === 0)
+        return;
     // e.movementX and e.movementY do not seem to be accurate 
     let dx = e.clientX - mouse.lastX, dy = e.clientY - mouse.lastY;
     // mouse-drag-start detection
@@ -191,9 +242,11 @@ const mouseupHandler = (e) => {
     window.removeEventListener("mouseup", mouseupHandler);
     // set mouse
     mouse.lastMouseupTime = Date.now();
+    // mouse-drag-end detection
     if (mouse.isMoving) {
-        // mouse-drag-end detection
+        mouse.isMoving = false;
         if (mouse.isLongclick) {
+            mouse.isLongclick = false;
             dispatchGesture(mouse.activeElement, { name: "longclick-drag-end", x: mouse.lastX, y: mouse.lastY });
         }
         else {
@@ -209,7 +262,6 @@ const mouseupHandler = (e) => {
                     break;
             }
         }
-        mouse.isMoving = false;
     }
     else if (!mouse.isLongclick) {
         // right-click detection
@@ -370,6 +422,7 @@ const touchendHandler = (e) => {
     if (touch.isDragging) {
         touch.isDragging = false;
         if (touch.isLongpressed) {
+            touch.isLongpressed = false;
             dispatchGesture(touch.activeElement, { name: "longpress-drag-end", x: touch.x, y: touch.y });
         }
         else {
@@ -404,8 +457,10 @@ export function enable(...elms) {
         if (activeElms.findIndex(e => e === elm) !== -1)
             continue;
         // add window event listeners if this is the first element being tracked
-        if (activeElms.length == 0)
+        if (activeElms.length == 0) {
             window.addEventListener('blur', blurHandler);
+            window.addEventListener('focus', focusHandler);
+        }
         // start tracking element
         activeElms.push(elm);
         elm.addEventListener('touchstart', touchstartHandler, { passive: false });
@@ -438,6 +493,8 @@ export function disable(...elms) {
         }
     }
     // if no more elements are enabled, remove window event listeners
-    if (activeElms.length == 0)
+    if (activeElms.length == 0) {
         window.removeEventListener('blur', blurHandler);
+        window.removeEventListener('focus', focusHandler);
+    }
 }
