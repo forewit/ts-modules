@@ -1,4 +1,5 @@
 // import gestures
+
 import * as gestures from './gestures.js';
 
 let dist = function (x1: number, y1: number, x2: number, y2: number) {
@@ -34,30 +35,32 @@ export default class Drawing {
     lineDash: number[];
 
     constructor(element: HTMLCanvasElement, options?: PenOptions) {
-        var me = this;
         if (!options) options = {};
 
         // Attributes
-        me.lastPoint = {x:0,y:0};
-        me.height = 0;
-        me.width = 0;
-        me.dpi = window.devicePixelRatio;
-        me.elm = element;
-        me.ctx = me.elm.getContext("2d");
-        me.drawRadius = (options.drawRadius) ? options.drawRadius : 10;
-        me.lineWidth = (options.lineWidth) ? options.lineWidth : 5;
-        me.lineCap = (options.lineCap) ? options.lineCap : "round" as CanvasLineCap;
-        me.strokeStyle = (options.strokeStyle) ? options.strokeStyle : "#000000";
-        me.lineDash = (options.lineDash) ? options.lineDash : [];
+        this.lastPoint = {x:0,y:0};
+        this.height = 0;
+        this.width = 0;
+        this.dpi = window.devicePixelRatio;
+        this.elm = element;
+        this.ctx = this.elm.getContext("2d") as CanvasRenderingContext2D;
+        this.drawRadius = (options.drawRadius) ? options.drawRadius : 10;
+        this.lineWidth = (options.lineWidth) ? options.lineWidth : 5;
+        this.lineCap = (options.lineCap) ? options.lineCap : "round" as CanvasLineCap;
+        this.strokeStyle = (options.strokeStyle) ? options.strokeStyle : "#000000";
+        this.lineDash = (options.lineDash) ? options.lineDash : [];
 
         // bind handlers
-        me.dragHandler = me.dragHandle.bind(me);
-        me.startHandler = me.startHandle.bind(me);
-        me.resizeObserver.observe(me.elm);
+        this.dragHandler = this.dragHandle.bind(this);
+        this.startHandler = this.startHandle.bind(this);
+
+        // resize observers
+        this.resizeObserver.observe(this.elm);
 
         // initialize gestures
+        var me = this;
         gestures.enable(me.elm);
-        me.elm.addEventListener('gesture', (e:CustomEvent) => {
+        me.elm.addEventListener('gesture', ((e:CustomEvent) => {
             switch (e.detail.name) {
                 case 'left-click-drag-start':
                 case 'touch-drag-start':
@@ -70,7 +73,7 @@ export default class Drawing {
                 default:
                     break;
             }
-        });
+        }) as EventListener);
 
         me.resize();
     }
@@ -103,7 +106,7 @@ export default class Drawing {
         me.ctx.moveTo(me.lastPoint.x, me.lastPoint.y);
     }
 
-    dragHandle(x, y) {
+    dragHandle(x: number, y: number) {
         var me = this;
 
         let newPoint = me.screenToCanvas(x, y);
