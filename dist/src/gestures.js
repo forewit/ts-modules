@@ -50,7 +50,17 @@ const LONG_CLICK_DELAY = 500;
 const DOUBLE_CLICK_DELAY = 300; // reduce to 100 to remove double clicks
 // MousePointer Class
 class MousePointer {
-    constructor() { this.reset(); }
+    constructor() {
+        this.isMoving = false;
+        this.isLongclick = false;
+        this.button = 0;
+        this.lastX = 0;
+        this.lastY = 0;
+        this.consecutiveClicks = 0;
+        this.lastMouseupTime = 0;
+        this.activeElement = null;
+        this.reset();
+    }
     reset() {
         this.isMoving = false;
         this.isLongclick = false;
@@ -64,7 +74,21 @@ class MousePointer {
 }
 // TouchPointer Class
 class TouchPointer {
-    constructor() { this.reset(); }
+    constructor() {
+        this.isDragging = false;
+        this.isPinching = false;
+        this.isLongpressed = false;
+        this.consecutiveTaps = 0;
+        this.lastTouchendTime = 0;
+        this.lastCenterX = 0;
+        this.lastCenterY = 0;
+        this.identifier = 0;
+        this.x = 0;
+        this.y = 0;
+        this.hypotenuse = 0;
+        this.activeElement = null;
+        this.reset();
+    }
     reset() {
         this.isDragging = false;
         this.isPinching = false;
@@ -82,6 +106,8 @@ class TouchPointer {
 }
 let activeElms = [], mouse = new MousePointer(), touch = new TouchPointer();
 const dispatchGesture = (elm, data) => {
+    if (elm == null)
+        return;
     elm.dispatchEvent(new CustomEvent("gesture", {
         detail: data,
         bubbles: false,
@@ -334,15 +360,15 @@ const touchstartHandler = (e) => {
         }
     }, LONG_PRESS_DELAY);
 };
-const touchmoveHandler = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
+const touchmoveHandler = (evt) => {
+    evt.preventDefault();
+    evt.stopPropagation();
     if (touch.isDragging) {
         // capture previous position
         let lastX = touch.x, lastY = touch.y;
         // update touch
-        touch.x = e.touches[0].clientX;
-        touch.y = e.touches[0].clientY;
+        touch.x = evt.touches[0].clientX;
+        touch.y = evt.touches[0].clientY;
         //touch.identifier = e.touches[0].identifier;
         // calculate distance
         let dx = touch.x - lastX, dy = touch.y - lastY;
@@ -355,15 +381,15 @@ const touchmoveHandler = (e) => {
         }
         return;
     }
-    else if (!touch.isLongpressed && (touch.isPinching || e.touches.length > 1)) {
+    else if (!touch.isLongpressed && (touch.isPinching || evt.touches.length > 1)) {
         // update touch
-        touch.x = e.touches[0].clientX;
-        touch.y = e.touches[0].clientY;
+        touch.x = evt.touches[0].clientX;
+        touch.y = evt.touches[0].clientY;
         //touch.identifier = e.touches[0].identifier;
         // capture 2nd touch
         let touch2 = {
-            x: e.touches[1].clientX,
-            y: e.touches[1].clientY,
+            x: evt.touches[1].clientX,
+            y: evt.touches[1].clientY,
         };
         // capture center of 2 touches
         let center = {
@@ -394,16 +420,16 @@ const touchmoveHandler = (e) => {
         if (touch.isLongpressed) {
             dispatchGesture(touch.activeElement, { name: "longpress-drag-start", x: touch.x, y: touch.y });
             // update touch
-            touch.x = e.touches[0].clientX;
-            touch.y = e.touches[0].clientY;
+            touch.x = evt.touches[0].clientX;
+            touch.y = evt.touches[0].clientY;
             //touch.identifier = e.touches[0].identifier;
             dispatchGesture(touch.activeElement, { name: "longpress-dragging", x: touch.x, y: touch.y, dx: 0, dy: 0 });
         }
         else {
             dispatchGesture(touch.activeElement, { name: "touch-drag-start", x: touch.x, y: touch.y });
             // update touch
-            touch.x = e.touches[0].clientX;
-            touch.y = e.touches[0].clientY;
+            touch.x = evt.touches[0].clientX;
+            touch.y = evt.touches[0].clientY;
             //touch.identifier = e.touches[0].identifier;
             dispatchGesture(touch.activeElement, { name: "touch-dragging", x: touch.x, y: touch.y, dx: 0, dy: 0 });
         }

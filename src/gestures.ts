@@ -52,14 +52,14 @@ const DOUBLE_CLICK_DELAY = 300; // reduce to 100 to remove double clicks
 
 // MousePointer Class
 class MousePointer {
-    isMoving: boolean;
-    isLongclick: boolean;
-    button: number;
-    lastX: number;
-    lastY: number;
-    consecutiveClicks: number;
-    lastMouseupTime: number;
-    activeElement: Element | null;
+    isMoving: boolean = false;
+    isLongclick: boolean = false;
+    button: number = 0;
+    lastX: number = 0;
+    lastY: number = 0;
+    consecutiveClicks: number = 0;
+    lastMouseupTime: number = 0;
+    activeElement: HTMLElement | null = null;
     constructor() { this.reset() }
     reset() {
         this.isMoving = false;
@@ -75,18 +75,18 @@ class MousePointer {
 
 // TouchPointer Class
 class TouchPointer {
-    isDragging: boolean;
-    isPinching: boolean;
-    isLongpressed: boolean;
-    consecutiveTaps: number;
-    lastTouchendTime: number;
-    lastCenterX: number;
-    lastCenterY: number;
-    identifier: number;
-    x: number;
-    y: number;
-    hypotenuse: number;
-    activeElement: Element | null;
+    isDragging = false;
+    isPinching = false;
+    isLongpressed = false;
+    consecutiveTaps = 0;
+    lastTouchendTime = 0;
+    lastCenterX = 0;
+    lastCenterY = 0;
+    identifier = 0;
+    x = 0;
+    y = 0;
+    hypotenuse: number | null = 0;
+    activeElement: HTMLElement | null = null;
     constructor() { this.reset() }
     reset() {
         this.isDragging = false;
@@ -115,11 +115,12 @@ interface Gesture {
     zoom?: number,
 }
 
-let activeElms: Element[] = [],
+let activeElms: HTMLElement[] = [],
     mouse = new MousePointer(),
     touch = new TouchPointer();
 
-const dispatchGesture = (elm: Element, data: Gesture) => {
+const dispatchGesture = (elm: HTMLElement | null, data: Gesture) => {
+    if (elm == null) return;
     elm.dispatchEvent(new CustomEvent("gesture", {
         detail: data,
         bubbles: false,
@@ -195,7 +196,7 @@ const blurHandler = (e: Event) => {
 }
 
 const wheelHandler = (e: WheelEvent) => {
-    dispatchGesture(e.target as Element, { name: "wheel", x: e.clientX, y: e.clientY, event: e });
+    dispatchGesture(e.target as HTMLElement, { name: "wheel", x: e.clientX, y: e.clientY, event: e });
 
     // prevent page scrolling
     e.preventDefault();
@@ -217,7 +218,7 @@ const mousedownHandler = (e: MouseEvent) => {
     window.addEventListener("mouseup", mouseupHandler);
 
     // set mouse
-    mouse.activeElement = e.target as Element;
+    mouse.activeElement = e.target as HTMLElement;
     mouse.lastX = e.clientX;
     mouse.lastY = e.clientY;
     if (!mouse.isMoving) mouse.button = e.button;
@@ -396,9 +397,9 @@ const touchstartHandler = (e: TouchEvent) => {
     }, LONG_PRESS_DELAY);
 }
 
-const touchmoveHandler = (e: TouchEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
+const touchmoveHandler = (evt: TouchEvent) => {
+    evt.preventDefault();
+    evt.stopPropagation();
 
     if (touch.isDragging) {
         // capture previous position
@@ -406,8 +407,8 @@ const touchmoveHandler = (e: TouchEvent) => {
             lastY = touch.y;
 
         // update touch
-        touch.x = e.touches[0].clientX;
-        touch.y = e.touches[0].clientY;
+        touch.x = evt.touches[0].clientX;
+        touch.y = evt.touches[0].clientY;
         //touch.identifier = e.touches[0].identifier;
 
         // calculate distance
@@ -421,16 +422,16 @@ const touchmoveHandler = (e: TouchEvent) => {
             dispatchGesture(touch.activeElement, { name: "touch-dragging", x: touch.x, y: touch.y, dx: dx, dy: dy });
         }
         return;
-    } else if (!touch.isLongpressed && (touch.isPinching || e.touches.length > 1)) {
+    } else if (!touch.isLongpressed && (touch.isPinching || evt.touches.length > 1)) {
         // update touch
-        touch.x = e.touches[0].clientX;
-        touch.y = e.touches[0].clientY;
+        touch.x = evt.touches[0].clientX;
+        touch.y = evt.touches[0].clientY;
         //touch.identifier = e.touches[0].identifier;
 
         // capture 2nd touch
         let touch2 = {
-            x: e.touches[1].clientX,
-            y: e.touches[1].clientY,
+            x: evt.touches[1].clientX,
+            y: evt.touches[1].clientY,
         }
 
         // capture center of 2 touches
@@ -465,8 +466,8 @@ const touchmoveHandler = (e: TouchEvent) => {
             dispatchGesture(touch.activeElement, { name: "longpress-drag-start", x: touch.x, y: touch.y });
 
             // update touch
-            touch.x = e.touches[0].clientX;
-            touch.y = e.touches[0].clientY;
+            touch.x = evt.touches[0].clientX;
+            touch.y = evt.touches[0].clientY;
             //touch.identifier = e.touches[0].identifier;
 
             dispatchGesture(touch.activeElement, { name: "longpress-dragging", x: touch.x, y: touch.y, dx: 0, dy: 0 });
@@ -474,8 +475,8 @@ const touchmoveHandler = (e: TouchEvent) => {
             dispatchGesture(touch.activeElement, { name: "touch-drag-start", x: touch.x, y: touch.y });
 
             // update touch
-            touch.x = e.touches[0].clientX;
-            touch.y = e.touches[0].clientY;
+            touch.x = evt.touches[0].clientX;
+            touch.y = evt.touches[0].clientY;
             //touch.identifier = e.touches[0].identifier;
 
             dispatchGesture(touch.activeElement, { name: "touch-dragging", x: touch.x, y: touch.y, dx: 0, dy: 0 });
@@ -525,7 +526,7 @@ const touchendHandler = (e: TouchEvent) => {
     touch.isLongpressed = false;
 }
 
-export function enable(...elms: Element[]): void {
+export function enable(...elms: HTMLElement[]): void {
     for (let elm of elms) {
         // skip if element is already tracked
         if (activeElms.findIndex(e => e === elm) !== -1) continue;
@@ -545,8 +546,8 @@ export function enable(...elms: Element[]): void {
     }
 }
 
-export function disable(...elms: Element[]): void {
-    const clearEventListeners = (elm: Element): void => {
+export function disable(...elms: HTMLElement[]): void {
+    const clearEventListeners = (elm: HTMLElement): void => {
         elm.removeEventListener('touchstart', touchstartHandler);
         elm.removeEventListener('mousedown', mousedownHandler);
         elm.removeEventListener('contextmenu', contextmenuHandler);
