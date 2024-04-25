@@ -3,6 +3,8 @@
 // as much as it can, without ever going more than once per `wait` duration;
 // but if you'd like to disable the execution on the leading edge, pass
 // `{leading: false}`. To disable execution on the trailing edge, ditto.
+  // example: throttle(my_function, 1000);
+  // example: throttle(()={my_function(x)}, 1000, {leading: false, trailing: false});
 export const throttle = (fn: Function, wait: number, options?: { [name: string]: any }) => {
     options = options || {};
     let context: any,
