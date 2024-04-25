@@ -83,6 +83,7 @@ class TouchPointer {
     lastCenterX = 0;
     lastCenterY = 0;
     identifier = 0;
+    force = 1;
     x = 0;
     y = 0;
     hypotenuse: number | null = 0;
@@ -97,6 +98,7 @@ class TouchPointer {
         this.lastCenterX = 0;
         this.lastCenterY = 0;
         this.identifier = 0;
+        this.force = 1;
         this.x = 0;
         this.y = 0;
         this.hypotenuse = 0; // distance between two fingers
@@ -113,6 +115,7 @@ interface Gesture {
     dx?: number,
     dy?: number,
     zoom?: number,
+    force?: number
 }
 
 let activeElms: HTMLElement[] = [],
@@ -417,9 +420,9 @@ const touchmoveHandler = (evt: TouchEvent) => {
 
         // touch-dragging detection
         if (touch.isLongpressed) {
-            dispatchGesture(touch.activeElement, { name: "longpress-dragging", x: touch.x, y: touch.y, dx: dx, dy: dy });
+            dispatchGesture(touch.activeElement, { name: "longpress-dragging", x: touch.x, y: touch.y, dx: dx, dy: dy, force: evt.touches[0].force });
         } else {
-            dispatchGesture(touch.activeElement, { name: "touch-dragging", x: touch.x, y: touch.y, dx: dx, dy: dy });
+            dispatchGesture(touch.activeElement, { name: "touch-dragging", x: touch.x, y: touch.y, dx: dx, dy: dy, force: evt.touches[0].force });
         }
         return;
     } else if (!touch.isLongpressed && (touch.isPinching || evt.touches.length > 1)) {
@@ -463,29 +466,29 @@ const touchmoveHandler = (evt: TouchEvent) => {
         // longpress-dragging detection
         touch.isDragging = true;
         if (touch.isLongpressed) {
-            dispatchGesture(touch.activeElement, { name: "longpress-drag-start", x: touch.x, y: touch.y });
+            dispatchGesture(touch.activeElement, { name: "longpress-drag-start", x: touch.x, y: touch.y, force: evt.touches[0].force });
 
             // update touch
             touch.x = evt.touches[0].clientX;
             touch.y = evt.touches[0].clientY;
             //touch.identifier = e.touches[0].identifier;
 
-            dispatchGesture(touch.activeElement, { name: "longpress-dragging", x: touch.x, y: touch.y, dx: 0, dy: 0 });
+            dispatchGesture(touch.activeElement, { name: "longpress-dragging", x: touch.x, y: touch.y, dx: 0, dy: 0, force: evt.touches[0].force });
         } else {
-            dispatchGesture(touch.activeElement, { name: "touch-drag-start", x: touch.x, y: touch.y });
+            dispatchGesture(touch.activeElement, { name: "touch-drag-start", x: touch.x, y: touch.y, force: evt.touches[0].force });
 
             // update touch
             touch.x = evt.touches[0].clientX;
             touch.y = evt.touches[0].clientY;
             //touch.identifier = e.touches[0].identifier;
 
-            dispatchGesture(touch.activeElement, { name: "touch-dragging", x: touch.x, y: touch.y, dx: 0, dy: 0 });
+            dispatchGesture(touch.activeElement, { name: "touch-dragging", x: touch.x, y: touch.y, dx: 0, dy: 0, force: evt.touches[0].force });
         }
     }
 }
 
-const touchendHandler = (e: TouchEvent) => {
-    if (touch.isDragging && e.touches.length > 0 && e.touches[0].identifier === touch.identifier) {
+const touchendHandler = (evt: TouchEvent) => {
+    if (touch.isDragging && evt.touches.length > 0 && evt.touches[0].identifier === touch.identifier) {
         return;
     }
 
