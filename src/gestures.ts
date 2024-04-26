@@ -83,7 +83,6 @@ class TouchPointer {
     lastCenterX = 0;
     lastCenterY = 0;
     identifier = 0;
-    force = 1;
     x = 0;
     y = 0;
     hypotenuse: number | null = 0;
@@ -98,7 +97,6 @@ class TouchPointer {
         this.lastCenterX = 0;
         this.lastCenterY = 0;
         this.identifier = 0;
-        this.force = 1;
         this.x = 0;
         this.y = 0;
         this.hypotenuse = 0; // distance between two fingers

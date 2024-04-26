@@ -1,10 +1,32 @@
+function debounce_leading(func, timeout = 300){
+    let timer;
+    return (...args) => {
+      if (!timer) {
+        func.apply(this, args);
+      }
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        timer = undefined;
+      }, timeout);
+    };
+  }
+
+// helper debounce function
+export const debounce = (func: Function, timeout = 300) => {
+    let timer;
+    return (...args) => {
+        clearTimeout(timer);
+        timer = setTimeout(() => { func.apply(this, args); }, timeout);
+    };
+}
+
 // Returns a function, that, when invoked, will only be triggered at most once
 // during a given window of time. Normally, the throttled function will run
 // as much as it can, without ever going more than once per `wait` duration;
 // but if you'd like to disable the execution on the leading edge, pass
 // `{leading: false}`. To disable execution on the trailing edge, ditto.
-  // example: throttle(my_function, 1000);
-  // example: throttle(()={my_function(x)}, 1000, {leading: false, trailing: false});
+// example: throttle(my_function, 1000);
+// example: throttle(()={my_function(x)}, 1000, {leading: false, trailing: false});
 export const throttle = (fn: Function, wait: number, options?: { [name: string]: any }) => {
     options = options || {};
     let context: any,
@@ -92,9 +114,9 @@ export function pointInRotatedRectangle(
 
 // Function for creating formatted logs
 interface LogOptions {
-    color?: string, 
-    background?: string, 
-    bold?: boolean, 
+    color?: string,
+    background?: string,
+    bold?: boolean,
     stringify?: boolean, // print objects as JSON
 }
 
