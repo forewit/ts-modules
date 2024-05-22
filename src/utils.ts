@@ -1,3 +1,4 @@
+// a debounce function that only triggers on the leading edge
 function debounce_leading(func, timeout = 300){
     let timer;
     return (...args) => {
@@ -11,7 +12,7 @@ function debounce_leading(func, timeout = 300){
     };
   }
 
-// helper debounce function
+// a debounce function that only triggers on the trailing edge
 export const debounce = (func: Function, timeout = 300) => {
     let timer;
     return (...args) => {
