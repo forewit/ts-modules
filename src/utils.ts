@@ -1,3 +1,32 @@
+interface AnimateOptions {
+    duration?: number;
+    easing?: (t: number) => number;
+    onEnd?: () => void;
+    css: (t:number, u:number) => string;
+}
+
+const animateCSS = (element: HTMLElement, options: AnimateOptions) => {
+    const { duration = 300, easing = ()=>1, onEnd = () => {}, css } = options;
+    const oldCSS = element.style.cssText;
+
+    let start: number;
+    function step(timeStamp: number) {
+      if (start === undefined) start = timeStamp;
+      const t = easing((timeStamp - start) / duration);
+      const u = 1 - t;
+
+      if (t < 1) {
+        element.style.cssText = oldCSS + css(t, u);
+        console.log(u)
+        requestAnimationFrame(step);
+      } else {
+        element.style.cssText = oldCSS;
+        onEnd();
+      }
+    }
+    requestAnimationFrame(step);
+}
+
 // a debounce function that only triggers on the leading edge
 function debounce_leading(func, timeout = 300){
     let timer;
