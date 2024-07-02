@@ -28,12 +28,17 @@ const animateCSS = (element: HTMLElement, options: AnimateOptions) => {
 }
 
 // a debounce function that only triggers on the leading edge
-function debounce_leading(func, timeout = 300){
+function debounce_leading(func: Function, timeout = 300) {
+    // @ts-ignore
     let timer;
+    // @ts-ignore
     return (...args) => {
+      // @ts-ignore
       if (!timer) {
+        // @ts-ignore
         func.apply(this, args);
       }
+      // @ts-ignore
       clearTimeout(timer);
       timer = setTimeout(() => {
         timer = undefined;
@@ -42,13 +47,19 @@ function debounce_leading(func, timeout = 300){
   }
 
 // a debounce function that only triggers on the trailing edge
-export const debounce = (func: Function, timeout = 300) => {
+const debounce = (func: Function, timeout = 300) => {
+    // @ts-ignore
     let timer;
+    // @ts-ignore
     return (...args) => {
-        clearTimeout(timer);
-        timer = setTimeout(() => { func.apply(this, args); }, timeout);
+      // @ts-ignore
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        // @ts-ignore
+        func.apply(this, args);
+      }, timeout);
     };
-}
+  };
 
 // Returns a function, that, when invoked, will only be triggered at most once
 // during a given window of time. Normally, the throttled function will run
