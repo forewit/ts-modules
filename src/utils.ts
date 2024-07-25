@@ -61,6 +61,18 @@ const debounce = (func: Function, timeout = 300) => {
     };
   };
 
+  function hexToRGB(hex: string, alpha: number) {
+    var r = parseInt(hex.slice(1, 3), 16),
+      g = parseInt(hex.slice(3, 5), 16),
+      b = parseInt(hex.slice(5, 7), 16);
+
+    if (alpha) {
+      return "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")";
+    } else {
+      return "rgb(" + r + ", " + g + ", " + b + ")";
+    }
+  }
+
 // Returns a function, that, when invoked, will only be triggered at most once
 // during a given window of time. Normally, the throttled function will run
 // as much as it can, without ever going more than once per `wait` duration;
